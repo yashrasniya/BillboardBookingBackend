@@ -12,6 +12,7 @@ try:
     client = razorpay.Client(auth=(RGD.razorpay_id, RGD.razorpay_SECRET))
 except (django.db.utils.ProgrammingError, razorpay_gateway_detail.DoesNotExist, django.db.utils.OperationalError,
         IndexError) as e:
+    RGD=None
     print(e)
 # Create your models here.
 
