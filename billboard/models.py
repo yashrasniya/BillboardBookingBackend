@@ -8,7 +8,7 @@ from razorpay_app.models import Create_payment_link, razorpay_gateway_detail
 
 try:
     RGD = razorpay_gateway_detail.objects.all()[0]
-    callBackUrl=RGD.callBackUrl
+    callBackUrl=RGD.call_back_url
     # client = razorpay.Client(auth=("rzp_test_u01RD7HTlF1ysu", "oJclH13vmmj5evdT5HeKXrOG"))pxcGYJTKy2rc2fSIoLTlvrJA
     client = razorpay.Client(auth=(RGD.razorpay_id, RGD.razorpay_SECRET))
 except (django.db.utils.ProgrammingError, razorpay_gateway_detail.DoesNotExist, django.db.utils.OperationalError,
