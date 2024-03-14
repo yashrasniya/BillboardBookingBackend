@@ -56,8 +56,9 @@ class BillBoard_serializers(serializers.ModelSerializer):
     for i in Review.objects.filter(billboard=obj):
       rating=i.rating
       count+=1
-
-    return rating/count
+    if count>0:
+      return rating/count
+    return 0
 
   def get_address(self,obj):
     return str(obj.address)
