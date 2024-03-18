@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'reviews',
     'razorpay_app',
     'imgGenration',
+    'companyDetails',
 
     'rest_framework',
     'rest_framework_simplejwt',
