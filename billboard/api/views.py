@@ -36,15 +36,17 @@ class billBoard(APIView):
         else:
             billBoard_obj = BillBoard.objects.filter()
             if request.GET.get('city', '') and request.GET.get('address', ''):
-                billBoard_obj.filter(address__city=request.GET.get('city'), address__address=request.GET.get('address'))
+                print(request.GET.get('city', ''),request.GET.get('address', ''),billBoard_obj)
+                billBoard_obj=billBoard_obj.filter(address__city=request.GET.get('city'), address__address=request.GET.get('address'))
+                print(billBoard_obj)
             if request.GET.get('banner_type', ''):
-                billBoard_obj.filter(banner_type=request.GET.get('banner_type', ''))
+                billBoard_obj=billBoard_obj.filter(banner_type=request.GET.get('banner_type', ''))
             if request.GET.get('location_type', ''):
-                billBoard_obj.filter(location_type=request.GET.get('location_type'))
+                billBoard_obj=billBoard_obj.filter(location_type=request.GET.get('location_type'))
             if request.GET.get('lessTprice', ''):
-                billBoard_obj.filter(price__lte=request.GET.get('lessTprice'))
+                billBoard_obj=billBoard_obj.filter(price__lte=request.GET.get('lessTprice'))
             if request.GET.get('higherTprice', ''):
-                billBoard_obj.filter(price__hte=request.GET.get('higherTprice'))
+                billBoard_obj=billBoard_obj.filter(price__hte=request.GET.get('higherTprice'))
 
             return Response(BillBoard_serializers(billBoard_obj, many=True, context={'request': request}).data)
 
