@@ -14,4 +14,5 @@ class generationsHistory(models.Model):
     user = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
     date = models.DateField(auto_now=True)
     img_url = models.URLField(max_length=2000)
+    img = models.ImageField(upload_to='generations',blank=True,null=True)
     text = models.TextField(max_length=5000)

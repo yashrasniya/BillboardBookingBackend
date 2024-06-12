@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/', include('reviews.urls')),
     path('api/', include('imgGenration.urls')),
     path('api/', include('companyDetails.urls')),
+    path('api/', include('cart.urls')),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -6,22 +6,25 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 from rest_framework import pagination,status
+from gradio_client import Client
+from django.core.files import File  # you need this somewhere
+client = Client("yashrasniya/stabilityai-stable-diffusion-xl-base-1.0",verbose=False)
 
 from rest_framework.permissions import IsAuthenticated
 import os
 
-try:
-    obj=openAiConfig.objects.first()
-    if obj.server_on:
-
-        client = OpenAI(api_key=obj.api_key)
-        print(client.api_key,obj.api_key)
-
-
-except Exception as e:
-    print(e)
-    obj=False
-    client = False
+# try:
+#     obj=openAiConfig.objects.first()
+#     if obj.server_on:
+#
+#         client = OpenAI(api_key=obj.api_key)
+#         print(client.api_key,obj.api_key)
+#
+#
+# except Exception as e:
+#     print(e)
+#     obj=False
+#     client = False
 
 class GenerationsHistory(ListAPIView):
     permission_classes = [IsAuthenticated]
@@ -41,17 +44,19 @@ class ImageGenerations(APIView):
         if request.data.get('text',''):
             text = request.data.get('text')
             print(client)
-            if obj and obj.server_on and client:
-                re = client.images.generate(
-                  model=obj.model_name,
-                  prompt=text,
-                  n=1,
-                  size=obj.img_size
+            if client:
+                re = client.predict(
+                    param_0=text,
+                    api_name="/predict"
                 )
-                dir(re)
-                if re.data:
-                    gen_obj=generationsHistory.objects.create(text=text,user=self.request.user,img_url=re.data[0].url)
-                    return Response(generationsHistorySerializer(gen_obj).data,status=200)
+
+                if re:
+                    gen_obj=generationsHistory.objects.create(text=text,user=self.request.user,img_url=re)
+                    gen_obj.img.save(
+                        os.path.basename(re),
+                        File(open(re, 'rb'))
+                    )
+                    return Response(generationsHistorySerializer(gen_obj,context={'request':request}).data,status=200)
                 else:
                     return self.error_message('model error',status.HTTP_400_BAD_REQUEST)
             else:

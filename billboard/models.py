@@ -1,8 +1,6 @@
 import razorpay
 from django.db import models
 import django
-from razorpay import Payment
-
 from accounts.models import User
 from razorpay_app.models import Create_payment_link, razorpay_gateway_detail
 
@@ -72,7 +70,7 @@ class bookingHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
-    payment=models.ForeignKey(Create_payment_link, on_delete=models.CASCADE)
+    payment=models.ForeignKey(Create_payment_link,null=True, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='bookingHistory/')
 
 
@@ -92,7 +90,7 @@ class bookingHistory(models.Model):
             "amount": price*100,
             "currency": "INR",
 
-            "reference_id": f'NINE{self.payment.id}',
+            "reference_id": f'NINE0{self.payment.id}',
             "callback_url": callBackUrl,
             "description": "Payment for policy no #23456",
             "customer": {
@@ -125,14 +123,22 @@ class bookingHistory(models.Model):
     def createingPaymentLink(self,**kwargs):
         callBackUrl=kwargs.get('callBackUrl',RGD.call_back_url)
         price=((self.end_date-self.start_date).days/30)*int(self.billboard.price)
+        print(price,price<0)
+        if price<0:
+            raise Exception('Data is invalid')
         self.payment = Create_payment_link.objects.create(amount=str(price),
                                                  user=self.user,
-                                                 billboard=self.billboard,
+
                                                  callBackUrl=callBackUrl
                                                  )
+        self.payment.billboard.add(self.billboard)
     def save(self,*args,**kwargs):
-        self.createingPaymentLink(**kwargs)
+        if self.payment is None:
+            self.createingPaymentLink(**kwargs)
 
         super(bookingHistory,self).save(*args,**kwargs)
+
+    def save_multi(self,*args, **kwargs):
+        super(bookingHistory, self).save(*args, **kwargs)
 
 

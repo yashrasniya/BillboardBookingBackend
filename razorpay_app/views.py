@@ -81,8 +81,9 @@ class create_payment_link(APIView):
 
             obj = Create_payment_link.objects.create(amount=str(price),
                                                      user=user_obj,
-                                                     billboard=bill_board_obj
+
                                                      )
+            obj.billboard.add(bill_board_obj)
             obj.save()
             print(obj.id, price)
             d = fetching_link(int(price*100),
